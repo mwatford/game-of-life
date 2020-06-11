@@ -1,5 +1,5 @@
 import { drawBoard, updateGame, changeButtonText } from "./ts/draw-game";
-import { GameInstance, createBoard, checkCells } from "./ts/game-logic";
+import { GameInstance, createBoard, checkCells, Cell } from "./ts/game-logic";
 
 const game: GameInstance = {
   board: createBoard(30, 50),
@@ -20,18 +20,17 @@ function initGame(game: GameInstance): void {
     game.interval = setInterval((): void => main(game), 350);
   } else {
     clearInterval(game.interval);
-    updateGame(game.board);
   }
 }
 
 function main(game: GameInstance): void {
-  updateGame(game.board);
-
   const buff: any[] = checkCells(game);
 
   if (!buff.length) initGame(game);
 
-  buff.forEach((el): void => el());
+  buff.forEach((el: Cell): void => el.toggleAlive());
+
+  updateGame(buff);
 }
 
 drawBoard(game.board);

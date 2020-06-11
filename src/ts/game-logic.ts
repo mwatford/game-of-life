@@ -4,8 +4,8 @@ export class Cell {
   constructor(cellPos: CellPosition) {
     this.position = cellPos;
   }
-  setAlive(val: boolean): void {
-    this.alive = val;
+  toggleAlive(): void {
+    this.alive = !this.alive;
   }
   getAliveNeighboursCount(board: Board): number {
     let result: number = 0;
@@ -60,8 +60,8 @@ export function createBoard(rows: number, cols: number): Board {
   return board;
 }
 
-export function checkCells(game: GameInstance): any[] {
-  const result: any[] = [];
+export function checkCells(game: GameInstance): Cell[] {
+  const result: Cell[] = [];
   let rows: number = game.board.length;
 
   for (let y: number = 0; y < rows; y++) {
@@ -75,8 +75,8 @@ export function checkCells(game: GameInstance): any[] {
       if (cell.alive && (aliveNeighbours === 3 || aliveNeighbours === 2)) {
         continue;
       } else if (!cell.alive && aliveNeighbours === 3) {
-        result.push((): void => cell.setAlive(true));
-      } else if (cell.alive) result.push((): void => cell.setAlive(false));
+        result.push(cell);
+      } else if (cell.alive) result.push(cell);
     }
   }
   return result;

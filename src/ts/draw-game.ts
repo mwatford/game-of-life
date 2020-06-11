@@ -23,22 +23,16 @@ export function drawBoard(board: Board): void {
 
   if (container) container.replaceWith(boardDOM);
 }
-export function updateGame(board: Board): void {
+export function updateGame(board: Cell[]): void {
   const rows: number = board.length;
 
-  for (let y: number = 0; y < rows; y++) {
-    const row: Cell[] = board[y];
-    const rowLen: number = row.length;
+  board.forEach((cell: Cell): void => {
+    const cellElement: Element | null = document
+      .getElementsByClassName("row")
+      [cell.position.y].getElementsByClassName("cell")[cell.position.x];
 
-    for (let x: number = 0; x < rowLen; x++) {
-      const cell: Cell = board[y][x];
-      const cellElement: Element = document
-        .getElementsByClassName("row")
-        [cell.position.y].getElementsByClassName("cell")[cell.position.x];
-
-      toggleCellClass(cellElement, cell.alive);
-    }
-  }
+    if (cellElement) toggleCellClass(cellElement, cell.alive);
+  });
 }
 
 export function onCellClick(e: Event, cell: Cell): void {
