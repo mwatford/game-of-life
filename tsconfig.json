@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    // "target": "ES5",
+    // "module": "ES2015",
+    // "baseUrl": "./src",
+    // "outDir": "./public",
+    // "rootDir": "./src",
+    "strict": true
+  },
+  "include": ["src/**/*", "index.js", "game-logic.js", "draw-game.js"]
+}
