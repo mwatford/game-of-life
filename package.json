@@ -4,7 +4,8 @@
   "description": "",
   "main": "draw-board.js",
   "scripts": {
-    "dev": "parcel src/index.html --port 8080"
+    "dev": "parcel src/index.html --port 8080",
+    "errors": "tsc --watch --noEmit"
   },
   "keywords": [],
   "author": "",
