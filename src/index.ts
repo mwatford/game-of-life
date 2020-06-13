@@ -1,14 +1,18 @@
-import { drawBoard, updateGame, changeButtonText } from "./ts/draw-game";
-import { GameInstance, createBoard, checkCells, Cell } from "./ts/game-logic";
+import { drawBoard, updateGame } from "./ts/draw-game";
+import { GameInstance, Cell } from "./ts/game-logic";
 
-const game: GameInstance = {
-  board: createBoard(30, 50),
-  isRunning: false,
-  interval: null,
-};
+const game = new GameInstance({ rows: 30, cols: 50 });
 
-function clearBoard(game: GameInstance): void {
-  game.board = createBoard(30, 50);
+const startButton: HTMLElement = document.getElementById("start")!;
+const clearButton: HTMLElement = document.getElementById("clear")!;
+
+clearButton.addEventListener("click", (): void => onClearClick(game));
+startButton.addEventListener("click", (): void => initGame(game));
+
+drawBoard(game.board);
+
+function onClearClick(game: GameInstance): void {
+  game.initializeBoard();
   drawBoard(game.board);
 }
 
@@ -24,21 +28,17 @@ function initGame(game: GameInstance): void {
 }
 
 function main(game: GameInstance): void {
-  const buff: any[] = checkCells(game);
+  const buffer: Cell[] = game.getBuffer();
 
-  if (!buff.length) initGame(game);
+  if (!buffer.length) initGame(game);
 
-  buff.forEach((el: Cell): void => el.toggleAlive());
+  buffer.forEach((el: Cell): void => el.toggleAlive());
 
-  updateGame(buff);
+  updateGame(buffer);
 }
 
-drawBoard(game.board);
+function changeButtonText(isRunning: boolean): void {
+  const el = document.getElementById("start")!;
 
-const startButton: HTMLElement | null = document.getElementById("start");
-const clearButton: HTMLElement | null = document.getElementById("clear");
-
-if (clearButton)
-  clearButton.addEventListener("click", (): void => clearBoard(game));
-if (startButton)
-  startButton.addEventListener("click", (): void => initGame(game));
+  el.innerHTML = isRunning ? "PAUSE" : "START";
+}

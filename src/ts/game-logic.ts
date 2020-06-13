@@ -1,13 +1,67 @@
+interface CellPosition {
+  x: number;
+  y: number;
+}
+
 export class Cell {
   alive: boolean = false;
   position: CellPosition;
+
   constructor(cellPos: CellPosition) {
     this.position = cellPos;
   }
+
   toggleAlive(): void {
     this.alive = !this.alive;
   }
-  getAliveNeighboursCount(board: Board): number {
+}
+
+interface Size {
+  rows: number;
+  cols: number;
+}
+
+export class GameInstance {
+  size: Size;
+  board: Cell[][];
+  isRunning: boolean;
+  interval: any;
+
+  constructor(size: Size) {
+    this.size = size;
+    this.isRunning = false;
+    this.board = [];
+    this.initializeBoard();
+  }
+
+  initializeBoard(): void {
+    const board: Cell[][] = [];
+
+    for (let y: number = 0; y < this.size.rows; y++) {
+      board.push([]);
+
+      for (let x: number = 0; x < this.size.cols; x++) {
+        board[y].push(new Cell({ x, y }));
+      }
+    }
+
+    this.board = board;
+  }
+  checkCellState(position: CellPosition): boolean {
+    try {
+      const cell: Cell | null = this.getCell(position);
+
+      if (cell?.alive) return true;
+
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+  getCell(position: CellPosition) {
+    return this.board[position.y][position.x];
+  }
+  getCellAliveNeighbourCount(position: CellPosition): number {
     let result: number = 0;
     let x: number = -1,
       y: number = -1;
@@ -16,12 +70,12 @@ export class Cell {
       while (x <= 1) {
         if (x === 0 && y === 0) x++;
 
-        let cell: Cell;
+        const neighbourPosition: CellPosition = {
+          x: position.x - x,
+          y: position.y - y,
+        };
 
-        try {
-          cell = board[this.position.y - y][this.position.x - x];
-          if (cell && cell.alive) result++;
-        } catch (e) {}
+        if (this.checkCellState(neighbourPosition)) result++;
 
         x++;
       }
@@ -31,53 +85,25 @@ export class Cell {
 
     return result;
   }
-}
+  getBuffer(): Cell[] {
+    const result: Cell[] = [];
 
-export interface CellPosition {
-  x: number;
-  y: number;
-}
+    for (let y: number = 0; y < this.size.rows; y++) {
+      for (let x: number = 0; x < this.size.cols; x++) {
+        const cell: Cell = this.getCell({ x, y });
+        const aliveNeighbours: number = this.getCellAliveNeighbourCount({
+          x,
+          y,
+        });
 
-export interface GameInstance {
-  board: Board;
-  isRunning: boolean;
-  interval: any;
-}
-
-export type Board = Cell[][];
-
-export function createBoard(rows: number, cols: number): Board {
-  const board: Board = [];
-
-  for (let y: number = 0; y < rows; y++) {
-    board.push([]);
-
-    for (let x: number = 0; x < cols; x++) {
-      board[y].push(new Cell({ x, y }));
+        //determine cell state in the next generation
+        if (cell.alive && (aliveNeighbours === 3 || aliveNeighbours === 2)) {
+          continue;
+        } else if (!cell.alive && aliveNeighbours === 3) {
+          result.push(cell);
+        } else if (cell.alive) result.push(cell);
+      }
     }
+    return result;
   }
-
-  return board;
-}
-
-export function checkCells(game: GameInstance): Cell[] {
-  const result: Cell[] = [];
-  let rows: number = game.board.length;
-
-  for (let y: number = 0; y < rows; y++) {
-    let row: Cell[] = game.board[y];
-    let cols: number = row.length;
-
-    for (let x: number = 0; x < cols; x++) {
-      let cell: Cell = game.board[y][x];
-      let aliveNeighbours: number = cell.getAliveNeighboursCount(game.board);
-
-      if (cell.alive && (aliveNeighbours === 3 || aliveNeighbours === 2)) {
-        continue;
-      } else if (!cell.alive && aliveNeighbours === 3) {
-        result.push(cell);
-      } else if (cell.alive) result.push(cell);
-    }
-  }
-  return result;
 }
