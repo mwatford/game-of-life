@@ -1,5 +1,5 @@
 import { drawBoard, updateGame } from "./ts/draw-game";
-import { GameInstance, Cell } from "./ts/game-logic";
+import { GameInstance, Cell } from "./ts/classes";
 
 const game = new GameInstance({ rows: 30, cols: 50 });
 

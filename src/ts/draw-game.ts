@@ -1,4 +1,4 @@
-import { Cell } from "./game-logic";
+import { Cell } from "./classes";
 
 export function drawBoard(board: Cell[][]): void {
   let container: HTMLElement = document.getElementById("board")!;
