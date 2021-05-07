@@ -35,25 +35,21 @@ export class GameInstance {
   }
 
   initializeBoard(): void {
-    const board: Cell[][] = [];
+    this.board.length = 0;
 
     for (let y: number = 0; y < this.size.rows; y++) {
-      board.push([]);
+      this.board.push([]);
 
       for (let x: number = 0; x < this.size.cols; x++) {
-        board[y].push(new Cell({ x, y }));
+        this.board[y].push(new Cell({ x, y }));
       }
     }
-
-    this.board = board;
   }
   checkCellState(position: CellPosition): boolean {
     try {
       const cell: Cell | null = this.getCell(position);
 
-      if (cell?.alive) return true;
-
-      return false;
+      return cell.alive;
     } catch (e) {
       return false;
     }
@@ -63,11 +59,9 @@ export class GameInstance {
   }
   getCellAliveNeighbourCount(position: CellPosition): number {
     let result: number = 0;
-    let x: number = -1,
-      y: number = -1;
 
-    while (y <= 1) {
-      while (x <= 1) {
+    for (let y: number = -1; y <= 1; y++) {
+      for (let x: number = -1; x <= 1; x++) {
         if (x === 0 && y === 0) x++;
 
         const neighbourPosition: CellPosition = {
@@ -76,11 +70,7 @@ export class GameInstance {
         };
 
         if (this.checkCellState(neighbourPosition)) result++;
-
-        x++;
       }
-      y++;
-      x = -1;
     }
 
     return result;
@@ -96,7 +86,8 @@ export class GameInstance {
           y,
         });
 
-        //determine cell state in the next generation
+        // push cells which state should change in the next generation
+        // to the buffer array
         if (cell.alive && (aliveNeighbours === 3 || aliveNeighbours === 2)) {
           continue;
         } else if (!cell.alive && aliveNeighbours === 3) {

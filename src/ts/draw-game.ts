@@ -26,30 +26,35 @@ export function drawBoard(board: Cell[][]): void {
 
 export function updateGame(buffer: Cell[]): void {
   buffer.forEach((cell: Cell): void => {
-    const cellElement: Element | null = document
-      .getElementsByClassName("row")
-      [cell.position.y].getElementsByClassName("cell")[cell.position.x];
+    const cellElement: Element | null = getCellElement(
+      cell.position.x,
+      cell.position.y
+    );
 
-    if (cellElement) toggleCellClass(cellElement, cell.alive);
+    if (cellElement) toggleCellClass(cellElement);
   });
+}
+
+function getCellElement(x: number, y: number): Element | null {
+  return document
+    .getElementsByClassName("row")
+    [y].getElementsByClassName("cell")[x];
 }
 
 function onCellClick(e: Event, cell: Cell): void {
   cell.toggleAlive();
-  toggleCellClass(e.target, cell.alive);
+  toggleCellClass(e.target);
 }
 
-function toggleCellClass(el: any, isAlive: boolean): void {
-  isAlive
-    ? el.classList.add("cell--alive")
-    : el.classList.remove("cell--alive");
+function toggleCellClass(el: any): void {
+  el.classList.toggle("cell--alive");
 }
 
 function createCellElement(cell: Cell): HTMLElement {
   const el: HTMLElement = document.createElement("div");
   el.className = "cell";
 
-  el.addEventListener("click", (e) => onCellClick(e, cell));
+  el.addEventListener("click", e => onCellClick(e, cell));
 
   return el;
 }
